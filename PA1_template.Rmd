@@ -9,6 +9,7 @@ output:
 ## Loading and preprocessing the data
 
 ```{r}
+
 library("dplyr")
 library(lattice)
 activity       <- ( read.csv('activity.csv',sep=',') )
@@ -52,13 +53,6 @@ rownames(avg_interval)[which.max(apply(avg_interval,MARGIN=1,max))]
 print('Number of missing values')
 sum(is.na(activity['steps'])) 
 
-# act_filled <- activity
-# for (row in 1:nrow(act_filled)){
-#   if ( is.na(act_filled[row,'steps']) ){
-#     act_filled[row,'steps'] = avg_interval  [as.character(act_filled[row,'interval']),]   
-#   }
-# }
-
 
 act_filled <- merge(activity,avg_interval,by.x='interval')
 act_filled <- mutate(act_filled,steps= ifelse(is.na(steps),Mean,steps))
@@ -79,8 +73,8 @@ day_stats_filled$median <- tapply(act_filled$steps,act_filled$date,median)
 day_stats_filled$Total  <- tapply(act_filled$steps,act_filled$date,sum)
 
 print('Calculate and report the Mean and Median total number of steps taken each day')
-df_results['NA filled','Est.mean'] <-mean(day_stats_filled$Total)
-df_results['NA filled','Est.median'] <-median(day_stats_filled$Total)
+df_results['NA filled','Est.mean']   <- mean(day_stats_filled$Total)
+df_results['NA filled','Est.median'] <- median(day_stats_filled$Total)
 df_results
 
 ```
@@ -88,10 +82,9 @@ df_results
 ```{r}
 
 act_filled    <- mutate(act_filled, dia = ifelse (weekdays(as.Date(act_filled$date)) %in% c('sábado','domingo'),'weekend', 'weekday')    )
-
-activity_week <- split(act_filled,act_filled$dia)
-weekday       <- activity_week$weekday 
-weekend       <- activity_week$weekend
+activity_week        <- split(act_filled,act_filled$dia)
+weekday              <- activity_week$weekday 
+weekend              <- activity_week$weekend
 avg_interval_weekday <- as.data.frame(tapply(weekday$steps,weekday$interval,mean)) 
 avg_interval_weekend <- as.data.frame(tapply(weekend$steps,weekend$interval,mean)) 
 
